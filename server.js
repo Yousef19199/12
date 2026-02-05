@@ -17,6 +17,13 @@ const client = new Client({
         GatewayIntentBits.GuildMembers 
     ] 
 });
+const CLIENT_ID = process.env.CLIENT_ID;
+const CLIENT_SECRET = process.env.CLIENT_SECRET;
+const CALLBACK_URL = process.env.CALLBACK_URL;
+
+if (!CLIENT_ID || !CLIENT_SECRET || !CALLBACK_URL) {
+    throw new Error("❌ Discord OAuth env vars are missing");
+}
 
 let isApplyOpen = true; 
 
@@ -139,6 +146,7 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log("Server running on port", PORT);
 });
+
 
 
 
