@@ -38,12 +38,12 @@ app.use(session({
 
 passport.serializeUser((user, done) => done(null, user));
 passport.deserializeUser((obj, done) => done(null, obj));
-
 passport.use(new DiscordStrategy({
     clientID: CLIENT_ID,
     clientSecret: CLIENT_SECRET,
     callbackURL: CALLBACK_URL,
-    scope: ['identify']
+    scope: ['identify'],
+    proxy: true // 👈 أضف هذا السطر ضروري جداً عند الرفع على Render
 }, (accessToken, refreshToken, profile, done) => {
     return done(null, profile);
 }));
@@ -146,6 +146,7 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log("Server running on port", PORT);
 });
+
 
 
 
