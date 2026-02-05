@@ -159,8 +159,8 @@
         const applyContent = document.getElementById('applyContent');
 
         // 1. تحديث بيانات المستخدم في النافبار
-const app = express();
-app.set('trust proxy', 1); // 👈 أضف هذا السطر فوراً            userLabel.innerText = data.user.username;
+        if (data.user) {
+            userLabel.innerText = data.user.username;
             const av = document.getElementById('userAvatar');
             if (av) {
                 av.src = `https://cdn.discordapp.com/avatars/${data.user.id}/${data.user.avatar}.png`;
@@ -187,9 +187,9 @@ app.set('trust proxy', 1); // 👈 أضف هذا السطر فوراً          
         } else {
             applyContent.innerHTML = `
                 <div style="text-align:center; padding:50px;">
-                    <button onclick="window.location.href='https://wstlive40k.onrender.com/auth/discord/callback'" class="btn-submit">
-    <i class="fab fa-discord"></i> تسجيل الدخول عبر ديسكورد
-</button>
+                    <button onclick="window.location.href='/auth/discord'" class="btn-submit" style="background:#5865f2; width:auto; padding:15px 30px;">
+                        <i class="fab fa-discord"></i> تسجيل الدخول عبر ديسكورد للتقديم
+                    </button>
                 </div>`;
         }
     } catch (err) {
@@ -345,6 +345,7 @@ app.set('trust proxy', 1); // 👈 أضف هذا السطر فوراً          
         to { background-position: 200%; }
     }
 </style>
+
 
 
 
