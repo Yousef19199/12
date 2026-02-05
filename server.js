@@ -18,10 +18,6 @@ const client = new Client({
     ] 
 });
 
-const ADMIN_CHANNEL_ID = '1464585529571151924';
-const CLIENT_ID = '1457317342152232972';
-const CLIENT_SECRET = 'ZwiYWlDuuHrbuKGPEOeiyasSF-VaphSy';
-const CALLBACK_URL = process.env.CALLBACK_URL || 'https://wstlive40k.onrender.com/auth/discord/callback';
 let isApplyOpen = true; 
 
 app.use(cors());
@@ -140,6 +136,7 @@ client.on('messageCreate', message => {
 client.login(process.env.TOKEN);
 
 app.listen(3000, () => console.log('✅ السيرفر والويب شغال على http://localhost:3000'));
+
 
 
 
