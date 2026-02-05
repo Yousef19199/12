@@ -17,13 +17,12 @@ const client = new Client({
         GatewayIntentBits.GuildMembers 
     ] 
 });
-const CLIENT_ID = process.env.CLIENT_ID;
-const CLIENT_SECRET = process.env.CLIENT_SECRET;
-const CALLBACK_URL = process.env.CALLBACK_URL;
 
-if (!CLIENT_ID || !CLIENT_SECRET || !CALLBACK_URL) {
-    throw new Error("❌ Discord OAuth env vars are missing");
-}
+const BOT_TOKEN = '.GTQJFY.kEYvbs5Twjdx5_SFshpkU-_wp66_HW1Paf5V3s';
+const ADMIN_CHANNEL_ID = '1464585529571151924';
+const CLIENT_ID = '1463368613699391712';
+const CLIENT_SECRET = 'K86bCphoWQBmrqjpK3RsTP-B0_T2jX7K';
+const CALLBACK_URL = 'http://localhost:3000/auth/discord/callback';
 
 let isApplyOpen = true; 
 
@@ -38,12 +37,12 @@ app.use(session({
 
 passport.serializeUser((user, done) => done(null, user));
 passport.deserializeUser((obj, done) => done(null, obj));
+
 passport.use(new DiscordStrategy({
     clientID: CLIENT_ID,
     clientSecret: CLIENT_SECRET,
     callbackURL: CALLBACK_URL,
-    scope: ['identify'],
-    proxy: true // 👈 أضف هذا السطر ضروري جداً عند الرفع على Render
+    scope: ['identify']
 }, (accessToken, refreshToken, profile, done) => {
     return done(null, profile);
 }));
@@ -140,16 +139,8 @@ client.on('messageCreate', message => {
         message.reply(`حالة التقديم الآن: **${isApplyOpen ? 'مفتوح ✅' : 'مغلق ❌'}**`);
     }
 });
-client.login(process.env.TOKEN);
-
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log("Server running on port", PORT);
-});
-
-
-
-
+client.login(BOT_TOKEN);
+app.listen(3000, () => console.log('✅ السيرفر والويب شغال على http://localhost:3000'));
 
 
 
