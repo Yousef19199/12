@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>World Star                                                                                               </title>
@@ -86,9 +87,14 @@
    <div id="streamers" class="container">
     <div class="card">
         <h2 class="section-title"><i class="fas fa-video"></i> الستريمرز المعتمدين</h2>
-        <a href="https://kick.com/matrix-kwt" target="_blank" class="streamer-link">
-            <div class="streamer-tag">Matrix~KWT  </div>
-
+       <a href="https://kick.com/matrix-kwt" target="_blank" class="streamer-link">
+    <div class="streamer-tag">
+        Matrix~KWT
+        <span class="twitter-verify">
+            <i class="fas fa-check-circle"></i>
+        </span>
+    </div>
+</a>
                 <a href="https://kick.com/goatsprogaming" target="_blank" class="streamer-link">
             <div class="streamer-tag">Ali Goats</div>
 
@@ -190,10 +196,7 @@
         console.error("خطأ في الاتصال بالسيرفر:", err);
     }
 
-}
-
-function renderApplyForm(container) {
-
+}function renderApplyForm(container) {
     container.innerHTML = `
         <h2 class="section-title">استمارة صناع المحتوى</h2>
         <form id="finalApplyForm" style="display:flex; flex-direction:column; gap:12px; text-align:right;">
@@ -342,6 +345,7 @@ function renderApplyForm(container) {
         to { background-position: 200%; }
     }
 </style>
+
 
 
 
