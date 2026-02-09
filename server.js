@@ -1,3 +1,4 @@
+require('dotenv').config(); // هذا السطر لازم يكون أول سطر في الملف
 const { Client, GatewayIntentBits, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 const express = require('express');
 const session = require('express-session');
@@ -17,12 +18,20 @@ const client = new Client({
         GatewayIntentBits.GuildMembers 
     ] 
 });
+// إعدادات البوت - جلب البيانات من ملف .env
+const TOKEN = process.env.TOKEN;
+const CLIENT_ID = process.env.CLIENT_ID;
+const CLIENT_SECRET = process.env.CLIENT_SECRET;
+const CALLBACK_URL = process.env.CALLBACK_URL || `https://${process.env.RENDER_EXTERNAL_HOSTNAME}/auth/discord/callback`;
+const ADMIN_CHANNEL_ID = process.env.ADMIN_CHANNEL_ID;
 
-const BOT_TOKEN = '.GTQJFY.kEYvbs5Twjdx5_SFshpkU-_wp66_HW1Paf5V3s';
-const ADMIN_CHANNEL_ID = '1464585529571151924';
-const CLIENT_ID = '1463368613699391712';
-const CLIENT_SECRET = 'K86bCphoWQBmrqjpK3RsTP-B0_T2jX7K';
-const CALLBACK_URL = 'http://localhost:3000/auth/discord/callback';
+// طباعة الإعدادات للتأكد (بدون عرض الأسرار الكاملة)
+console.log('📋 إعدادات Discord OAuth:');
+console.log(`   CLIENT_ID: ${CLIENT_ID}`);
+console.log(`   CALLBACK_URL: ${CALLBACK_URL}`);
+console.log(`   CLIENT_SECRET: ${CLIENT_SECRET ? '✅ موجود' : '❌ مفقود'}`);
+console.log(`   TOKEN: ${TOKEN ? '✅ موجود' : '❌ مفقود'}`);
+
 
 let isApplyOpen = true; 
 
@@ -30,9 +39,14 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname))); 
 app.use(session({ 
-    secret: 'world_star_secure_key', 
+    secret: process.env.SESSION_SECRET || 'world_star_secure_key_' + Math.random().toString(36),
     resave: false, 
-    saveUninitialized: false 
+    saveUninitialized: false,
+    cookie: {
+        secure: process.env.NODE_ENV === 'production', // HTTPS في الإنتاج فقط
+        httpOnly: true,
+        maxAge: 24 * 60 * 60 * 1000 // 24 ساعة
+    }
 }));
 
 passport.serializeUser((user, done) => done(null, user));
@@ -50,10 +64,18 @@ passport.use(new DiscordStrategy({
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.get('/auth/discord', passport.authenticate('discord'));
-app.get('/auth/discord/callback', passport.authenticate('discord', { failureRedirect: '/' }), (req, res) => {
-    res.redirect('/#apply');
+app.get('/auth/discord', (req, res, next) => {
+    console.log('🔑 بدء عملية تسجيل الدخول عبر Discord...');
+    passport.authenticate('discord')(req, res, next);
 });
+
+app.get('/auth/discord/callback', 
+    passport.authenticate('discord', { failureRedirect: '/' }), 
+    (req, res) => {
+        console.log('✅ تم تسجيل الدخول بنجاح:', req.user.username);
+        res.redirect('/#apply');
+    }
+);
 app.get('/api/user', (req, res) => {
     // نرسل حالة التقديم (isApplyOpen) مع بيانات المستخدم
     res.json({ 
@@ -139,8 +161,38 @@ client.on('messageCreate', message => {
         message.reply(`حالة التقديم الآن: **${isApplyOpen ? 'مفتوح ✅' : 'مغلق ❌'}**`);
     }
 });
-client.login(BOT_TOKEN);
-app.listen(3000, () => console.log('✅ السيرفر والويب شغال على http://localhost:3000'));
 
+// تشغيل البوت
+client.login(process.env.TOKEN).then(() => {
+    console.log('✅ البوت متصل بـ Discord!');
+}).catch(err => {
+    console.error('❌ خطأ في تشغيل البوت:', err.message);
+});
+
+// تشغيل السيرفر
+const PORT = process.env.PORT || 3000;
+const server = app.listen(PORT, () => {
+    console.log('');
+    console.log('========================================');
+    console.log('✅ السيرفر شغال!');
+    console.log(`🌐 رابط الموقع: http://localhost:${PORT}`);
+    console.log(`🔑 تسجيل الدخول: http://localhost:${PORT}/auth/discord`);
+    console.log('========================================');
+    console.log('');
+}).on('error', (err) => {
+    if (err.code === 'EADDRINUSE') {
+        console.error('');
+        console.error('❌ البورت مستخدم!');
+        console.error(`   البورت ${PORT} مستخدم من برنامج آخر.`);
+        console.error('');
+        console.error('الحل:');
+        console.error('   1. أوقف البرنامج: taskkill /F /IM node.exe');
+        console.error('   2. أو غير البورت في ملف .env');
+        console.error('');
+    } else {
+        console.error('❌ خطأ في تشغيل السيرفر:', err.message);
+    }
+    process.exit(1);
+});
 
 
